@@ -1,3 +1,4 @@
+# gke.tf
 resource "kubernetes_namespace" "namespaces" {
   for_each = toset(["airflow"])
   metadata {
