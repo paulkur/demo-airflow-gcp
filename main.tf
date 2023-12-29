@@ -1,11 +1,12 @@
 # demo-airflow-gcp # main.tf
 module "airflow" {
   #source = "github.com/astrafy/terraform-astrafy-gcp-airflow-module//?ref=v0.0.1" # original
-  #source = "github.com/paulkur/terraform-astrafy-gcp-airflow-module"
-  source = "github.com/paulkur/terraform-astrafy-gcp-airflow-module//paulk-dev-branch"
+  source = "github.com/paulkur/terraform-astrafy-gcp-airflow-module//?ref=paulk-dev-branch"
 
   project_id = var.project_id
-  region     = "europe-west1"
+  #region     = "europe-west1"
+  region = var.gcp_region
+  #gcp_region = var.gcp_region
 
   sql_private_network   = module.network.network_id
   dags_repository       = "test-airflow-dags"
