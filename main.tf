@@ -1,5 +1,6 @@
 module "airflow" {
-  source = "github.com/astrafy/terraform-astrafy-gcp-airflow-module//?ref=v0.0.1"
+  #source = "github.com/astrafy/terraform-astrafy-gcp-airflow-module//?ref=v0.0.1" # original
+  source = "github.com/paulkur/terraform-astrafy-gcp-airflow-module"
 
   project_id = var.project_id
   region     = "europe-west1"
@@ -14,3 +15,4 @@ module "airflow" {
 
   depends_on = [google_service_networking_connection.vpc_connection, kubernetes_namespace.namespaces]
 }
+

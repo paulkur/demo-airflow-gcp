@@ -53,6 +53,7 @@ provider "helm" {
 }
 
 provider "github" {
-  owner = "acrulopez"
+  owner = "paulkur"
   token = var.token
 }
+

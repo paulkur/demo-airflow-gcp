@@ -1,4 +1,3 @@
-
 locals {
   subnets = {
     "01" = {
@@ -13,10 +12,9 @@ locals {
   }
 }
 
-
 module "network" {
   source  = "terraform-google-modules/network/google"
-  version = "7.0.0"
+  version = "8.1.0" # "7.0.0"
 
   project_id   = var.project_id
   network_name = "vpc-test"
@@ -46,10 +44,9 @@ module "network" {
   }
 }
 
-
 module "cloud_router" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "5.0.1"
+  version =  "6.0.2" # "5.0.1"
 
   name    = "router-shared-host"
   project = var.project_id
@@ -78,3 +75,4 @@ resource "google_service_networking_connection" "vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_alloc.name]
 }
+

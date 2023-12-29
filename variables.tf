@@ -6,3 +6,4 @@ variable "project_id" {
 variable "token" {
   type = string
 }
+
