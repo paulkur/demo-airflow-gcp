@@ -11,7 +11,7 @@ module "airflow" {
   dags_repository       = "test-airflow-dags"
   k8s_airflow_namespace = "airflow"
 
-  #airflow_version		= "2.8.0"
+  #airflow_version		= "1.11.0"
   #deploy_cloud_sql		= true
   #deploy_github_keys	= true
   #create_redis_secrets	= true

@@ -7,3 +7,7 @@ variable "token" {
   type = string
 }
 
+variable "gcp_auth_file" {
+  type = string
+}
+
