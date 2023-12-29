@@ -21,7 +21,8 @@ module "airflow" {
 
   deploy_airflow = true
 
-  airflow_values_filepath = "${path.module}/values.yaml"
+  #airflow_values_filepath = "${path.module}/values.yaml"
+  airflow_values_filepath = "${file("values.yaml")}"
 
   depends_on = [google_service_networking_connection.vpc_connection, kubernetes_namespace.namespaces]
 }

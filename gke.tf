@@ -34,6 +34,8 @@ module "kubernetes-engine_private-cluster-update-variant" {
   #region = var.gcp_region
   zones  = ["europe-west1-b", "europe-west1-c"]
 
+  deletion_protection = false
+
   grant_registry_access = true
   registry_project_ids  = [var.project_id]
 

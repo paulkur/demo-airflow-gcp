@@ -32,7 +32,7 @@ webserver:
 dags:
   gitSync:
     enabled: true
-    repo: git@github.com:paulkur/test-airflow-dags.git
+    repo: https://github.com/paulkur/test-airflow-dags.git
     branch: main
     depth: 5
     subPath: dev
