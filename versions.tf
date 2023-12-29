@@ -4,15 +4,20 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 4.74.0"
+	  #version = ">= 4.58.0"
+	  version = ">= 4.74.0"
+      #version = "5.10.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = ">= 4.58.0"
+	  version = ">= 4.58.0"
+      #version = ">= 4.74.0"
+	  #version = "5.10.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.18.1"
+	  #version = "2.24.0"
     }
     tls = {
       source  = "hashicorp/tls"
@@ -21,6 +26,7 @@ terraform {
     github = {
       source  = "integrations/github"
       version = ">= 5.36.0"
+	  #version = "5.42.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -29,13 +35,14 @@ terraform {
     helm = {
       source  = "hashicorp/helm"
       version = ">= 2.11.0"
+	  #version = "2.12.1"
     }
   }
 }
 
-
 provider "google" {
   project = var.project_id
+  credentials = file(var.gcp_auth_file)
 }
 
 provider "kubernetes" {
@@ -56,4 +63,3 @@ provider "github" {
   owner = "paulkur"
   token = var.token
 }
-

@@ -10,18 +10,15 @@ resource "kubernetes_namespace" "namespaces" {
     }
     name = each.value
   }
-  #depends_on = [module.kubernetes-engine_beta-private-cluster-update-variant]
   depends_on = [module.kubernetes-engine_private-cluster-update-variant]
 }
 
-#module "kubernetes-engine_beta-private-cluster-update-variant" {
 module "kubernetes-engine_private-cluster-update-variant" {
-  #source  = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
   source  = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster-update-variant"
-  version = "29.0.0" # "26.1.1"
+  version = "29.0.0"
 
   project_id = var.project_id
-  name = "airflow-cluster"
+  name       = "${var.gcp_app_name}-gke-test"
 
   network_project_id = var.project_id
   network            = module.network.network_name
@@ -30,14 +27,13 @@ module "kubernetes-engine_private-cluster-update-variant" {
   ip_range_pods     = "gke-pods"
   ip_range_services = "gke-services"
 
-  region = "europe-west1"
-  #region = var.gcp_region
-  zones  = ["europe-west1-b", "europe-west1-c"]
+  region = var.gcp_region
+  zones  = var.gcp_zones
 
   grant_registry_access = true
   registry_project_ids  = [var.project_id]
 
-  default_max_pods_per_node = 10
+  default_max_pods_per_node = 55
   remove_default_node_pool  = true
 
   enable_private_nodes = true
@@ -55,9 +51,9 @@ module "kubernetes-engine_private-cluster-update-variant" {
     enabled             = true
     autoscaling_profile = "OPTIMIZE_UTILIZATION"
     min_cpu_cores       = 1
-    max_cpu_cores       = 8
+    max_cpu_cores       = 200
     min_memory_gb       = 1
-    max_memory_gb       = 32
+    max_memory_gb       = 200
     auto_repair         = true
     auto_upgrade        = true
     gpu_resources       = []
@@ -66,13 +62,8 @@ module "kubernetes-engine_private-cluster-update-variant" {
 
 module "gke_auth" {
   source               = "terraform-google-modules/kubernetes-engine/google//modules/auth"
-  version              = "29.0.0" # "25.0.0"
-
+  version              = "29.0.0"
   project_id           = var.project_id
   cluster_name         = module.kubernetes-engine_private-cluster-update-variant.name
   location             = module.kubernetes-engine_private-cluster-update-variant.location
-  #cluster_name         = module.kubernetes-engine_beta-private-cluster-update-variant.name
-  #location             = module.kubernetes-engine_beta-private-cluster-update-variant.location
-  use_private_endpoint = false # default is "false"
 }
-

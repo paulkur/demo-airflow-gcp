@@ -1,3 +1,5 @@
+# airflowVersion: "2.8.0"
+
 images:
   airflow:
     repository: ~

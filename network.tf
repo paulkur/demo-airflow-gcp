@@ -15,7 +15,7 @@ locals {
 
 module "network" {
   source  = "terraform-google-modules/network/google"
-  version = "7.0.0" # "8.1.0" # "7.0.0"
+  version = "8.1.0" # "8.1.0" # "7.0.0"
 
   project_id   = var.project_id
   network_name = "vpc-test"
@@ -47,7 +47,7 @@ module "network" {
 
 module "cloud_router" {
   source  = "terraform-google-modules/cloud-router/google"
-  version = "5.0.1" # "6.0.2" # "5.0.1"
+  version = "6.0.2" # "6.0.2" # "5.0.1"
 
   name    = "router-shared-host"
   project = var.project_id
@@ -60,7 +60,6 @@ module "cloud_router" {
     }
   ]
 }
-
 
 resource "google_compute_global_address" "private_ip_alloc" {
   project       = var.project_id

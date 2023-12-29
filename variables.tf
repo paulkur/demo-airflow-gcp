@@ -7,6 +7,3 @@ variable "token" {
   type = string
 }
 
-variable "gcp_region" {
-  type = string
-}
