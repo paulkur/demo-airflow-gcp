@@ -1,17 +1,10 @@
-images:
-  airflow:
-    repository: ~
-    tag: ~
-    # Specifying digest takes precedence over tag.
-    digest: ~
+data:
+  # Secret for postgresql connection
+  metadataSecretName: airflow-db-credentials
+  brokerUrlSecretName: airflow-broker-url
 
-  data:
-    # Secret for postgresql connection
-    metadataSecretName: airflow-db-credentials
-    brokerUrlSecretName: airflow-broker-url
-
-  redis:
-    passwordSecretName: airflow-redis-password
+redis:
+  passwordSecretName: airflow-redis-password
 
 # Do not create a postgresql database
 postgresql:
