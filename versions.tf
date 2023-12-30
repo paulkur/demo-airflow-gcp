@@ -41,9 +41,18 @@ terraform {
 }
 
 provider "google" {
-  project = var.project_id
   credentials = file(var.gcp_auth_file)
+  project     = var.project_id
+  #region      = var.region
 }
+/*
+provider "kubernetes" {
+  load_config_file   = false
+  host               = module.gke.endpoint
+  token              = data.google_client_openid_userinfo.access_token
+  cluster_ca_certificate = base64decode(module.gke.cluster["cluster_ca_certificate"])
+}
+*/
 
 provider "kubernetes" {
   host                   = module.gke_auth.host

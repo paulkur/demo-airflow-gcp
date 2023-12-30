@@ -1,32 +1,3 @@
-provider "google" {
-  credentials = file(var.gcp_auth_file)
-  project     = var.project_id
-  region      = var.region
-}
-
-/*
-provider "kubernetes" {
-  load_config_file   = false
-  host               = module.gke.endpoint
-  token              = data.google_client_openid_userinfo.access_token
-  cluster_ca_certificate = base64decode(module.gke.cluster["cluster_ca_certificate"])
-}
-
-*/
-
-resource "random_id" "suffix" {
-  byte_length = 4
-}
-
-resource "random_id" "gke_cluster_suffix" {
-  byte_length = 4
-}
-
-resource "random_id" "sql_db_suffix" {
-  byte_length = 4
-}
-
-
 module "cloudresourcemanager_service" {
   source = "terraform-google-modules/project-factory/google//modules/project_services"
 
@@ -57,34 +28,11 @@ module "services" {
     "secretmanager.googleapis.com"
   ]
 }
+module "private-service-access" {
+  source = "GoogleCloudPlatform/sql-db/google//modules/private_service_access"
 
-module "network" {
-  source = "terraform-google-modules/network/google"
-
-  project_id   = var.project_id
-  network_name = "network-${random_id.suffix.hex}"
-
-  subnets = [
-    {
-      subnet_name           = "subnet"
-      subnet_ip             = "10.6.0.0/20"
-      subnet_region         = var.region
-      subnet_private_access = false
-    }
-  ]
-
-  secondary_ranges = {
-    subnet = [
-      {
-        range_name    = "subnet-secondary-gke-pods"
-        ip_cidr_range = "10.196.0.0/14"
-      },
-      {
-        range_name    = "subnet-secondary-gke-services"
-        ip_cidr_range = "10.200.0.0/20"
-      }
-    ]
-  }
+  project_id  = var.project_id
+  vpc_network = module.network.network_name
 }
 
 module "gke" {
@@ -113,13 +61,6 @@ module "gke" {
       initial_node_count = 1
     }
   ]
-}
-
-module "private-service-access" {
-  source = "GoogleCloudPlatform/sql-db/google//modules/private_service_access"
-
-  project_id  = var.project_id
-  vpc_network = module.network.network_name
 }
 
 module "sql-db" {
@@ -166,79 +107,6 @@ module "sql-db" {
   }
 
   module_depends_on = [module.private-service-access.peering_completed]
-}
-
-resource "google_secret_manager_secret" "db_user_pass" {
-  secret_id = "db-user-pass-${random_id.suffix.hex}"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [module.services.enabled_api_identities]
-}
-
-resource "random_id" "db_user_pass" {
-  byte_length = 8
-}
-
-resource "google_secret_manager_secret_version" "db_user_pass" {
-  secret      = google_secret_manager_secret.db_user_pass.id
-  secret_data = random_id.db_user_pass.hex
-}
-
-data "google_secret_manager_secret_version" "db_user_pass" {
-  secret  = google_secret_manager_secret.db_user_pass.secret_id
-  version = "latest"
-
-  depends_on = [google_secret_manager_secret_version.db_user_pass]
-}
-
-resource "helm_release" "metabase" {
-  name             = "metabase"
-  repository       = "https://pmint93.github.io/helm-charts"
-  chart            = "metabase"
-  namespace        = "metabase"
-  version          = var.metabase_helm_version
-  create_namespace = true
-  wait             = false
-
-  set {
-    name  = "database.type"
-    value = "postgres"
-  }
-
-  set {
-    name  = "database.host"
-    value = module.sql-db.private_ip_address
-  }
-
-  set {
-    name  = "database.port"
-    value = "5432"
-  }
-
-  set {
-    name  = "database.dbname"
-    value = "metabase-db"
-  }
-
-  set {
-    name  = "database.username"
-    value = "postgres0"
-  }
-
-  set {
-    name  = "database.password"
-    value = data.google_secret_manager_secret_version.db_user_pass.secret_data
-  }
-
-  set {
-    name  = "service.type"
-    value = "LoadBalancer"
-  }
-
-  depends_on = [module.gke.endpoint]
 }
 
 resource "helm_release" "airflow" {
@@ -327,4 +195,58 @@ resource "helm_release" "airflow" {
 
   depends_on = [module.gke.endpoint]
 
+}
+
+resource "kubernetes_namespace" "namespaces" {
+  for_each = toset(["airflow"])
+  metadata {
+    annotations = {
+      name = each.value
+    }
+    labels = {
+      istio-injection = "enabled"
+    }
+    name = each.value
+  }
+  depends_on = [module.gke]
+}
+
+module "gke_auth" {
+  source = "terraform-google-modules/kubernetes-engine/google//modules/auth"
+
+  project_id = var.project_id
+  cluster_name = module.gke.name
+  location = module.gke.location
+}
+
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+resource "random_id" "gke_cluster_suffix" {
+  byte_length = 4
+}
+resource "random_id" "sql_db_suffix" {
+  byte_length = 4
+}
+resource "random_id" "db_user_pass" {
+  byte_length = 8
+}
+resource "google_secret_manager_secret_version" "db_user_pass" {
+  secret      = google_secret_manager_secret.db_user_pass.id
+  secret_data = random_id.db_user_pass.hex
+}
+data "google_secret_manager_secret_version" "db_user_pass" {
+  secret  = google_secret_manager_secret.db_user_pass.secret_id
+  version = "latest"
+
+  depends_on = [google_secret_manager_secret_version.db_user_pass]
+}
+resource "google_secret_manager_secret" "db_user_pass" {
+  secret_id = "db-user-pass-${random_id.suffix.hex}"
+
+  replication {
+    auto {}
+  }
+
+  depends_on = [module.services.enabled_api_identities]
 }

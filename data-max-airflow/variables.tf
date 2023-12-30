@@ -7,7 +7,7 @@ variable "disable_services_on_destroy" {}
 variable "disable_dependent_services" {}
 variable "cluster_machine_type" {}
 variable "db_tier" {}
-variable "metabase_helm_version" {}
+#variable "metabase_helm_version" {}
 variable "airflow_helm_version" {}
 variable "airflow_default_tag" {}
 variable "airflow_version" {}
@@ -15,3 +15,4 @@ variable "airflow_dag_repo" {}
 variable "airflow_dag_branch" {}
 variable "airflow_dag_dir" {}
 variable "airflow_gitSshKey" {}
+variable "token" {}
