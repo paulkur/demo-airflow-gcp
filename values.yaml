@@ -2,7 +2,6 @@ images:
   airflow:
     repository: ~
     tag: ~
-    # Specifying digest takes precedence over tag.
     digest: ~
 
 data:
