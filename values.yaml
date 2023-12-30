@@ -65,7 +65,7 @@ env:
   - name: AIRFLOW__WEBSERVER__INSTANCE_NAME
     value: Airflow dev
   - name: AIRFLOW__WEBSERVER__NAVBAR_COLOR
-    value: "#EDC464"
+    value: "#5BD1D7"
 # If deployed with ArgoCD or similar
 # createUserJob:
 #   useHelmHooks: false
