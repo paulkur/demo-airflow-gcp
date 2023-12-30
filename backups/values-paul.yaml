@@ -1,17 +1,10 @@
-images:
-  airflow:
-    repository: ~
-    tag: ~
-    # Specifying digest takes precedence over tag.
-    digest: ~
-
-  data:
-    # Secret for postgresql connection
-    metadataSecretName: airflow-db-credentials
-    brokerUrlSecretName: airflow-broker-url
-
-  redis:
-    passwordSecretName: airflow-redis-password
+airflowVersion: "2.8.0"
+data:
+  # Secret for postgresql connection
+  metadataSecretName: airflow-db-credentials
+  brokerUrlSecretName: airflow-broker-url
+#redis:
+#  passwordSecretName: airflow-redis-password
 
 # Do not create a postgresql database
 postgresql:
@@ -29,16 +22,17 @@ webserver:
   livenessProbe:
     initialDelaySeconds: 60
     timeoutSeconds: 10
-
   readinessProbe:
     initialDelaySeconds: 60
     timeoutSeconds: 10
+  service:
+    type: LoadBalancer
 
 # Dags
 dags:
   gitSync:
     enabled: true
-    repo: git@github.com:paulkur/airflow-dags.git
+    repo: https://github.com/paulkur/test-airflow-dags.git
     branch: main
     depth: 5
     subPath: dev
@@ -46,7 +40,7 @@ dags:
 
 # Airflow executor
 # One of: LocalExecutor, LocalKubernetesExecutor, CeleryExecutor, KubernetesExecutor, CeleryKubernetesExecutor
-executor: CeleryExecutor
+executor: "LocalExecutor"
 
 # Fernet key
 fernetKeySecretName: fernet-key
@@ -54,18 +48,18 @@ fernetKeySecretName: fernet-key
 # Environment variables for the configuration
 # Check https://airflow.apache.org/docs/apache-airflow/stable/configurations-ref.html
 env:
-  - name: AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX
+  - name: "AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX"
     value: "True"
-  - name: AIRFLOW__API__AUTH_BACKENDS
-    value: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.default
-  - name: AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT
-    value: google-cloud-platform://
-  - name: AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT
+  - name: "AIRFLOW__API__AUTH_BACKENDS"
+    value: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.default"
+  - name: "AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT"
+    value: "google-cloud-platform://"
+  - name: "AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT"
     value: "300"
-  - name: AIRFLOW__WEBSERVER__INSTANCE_NAME
-    value: Airflow dev
-  - name: AIRFLOW__WEBSERVER__NAVBAR_COLOR
-    value: "#EDC464"
+  - name: "AIRFLOW__WEBSERVER__INSTANCE_NAME"
+    value: "Airflow dev"
+  - name: "AIRFLOW__WEBSERVER__NAVBAR_COLOR"
+    value: "#5BD1D7"
 # If deployed with ArgoCD or similar
 # createUserJob:
 #   useHelmHooks: false
@@ -77,3 +71,4 @@ env:
 #   applyCustomEnv: false
 #   annotations:
 #     "sidecar.istio.io/inject": "false"
+

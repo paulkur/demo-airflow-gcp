@@ -38,7 +38,7 @@ webserver:
 dags:
   gitSync:
     enabled: true
-    repo: git@github.com:paulkur/airflow-dags.git
+    repo: git@github.com:acrulopez/test-airflow-dags.git
     branch: main
     depth: 5
     subPath: dev

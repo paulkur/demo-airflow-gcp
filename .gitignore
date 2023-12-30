@@ -1,3 +1,4 @@
+airflow-dags/
 auth/
 # Local .terraform directories
 **/.terraform/*
