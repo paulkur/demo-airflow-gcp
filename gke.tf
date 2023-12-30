@@ -9,16 +9,16 @@ resource "kubernetes_namespace" "namespaces" {
     }
     name = each.value
   }
-  #depends_on = [module.kubernetes-engine_beta-private-cluster-update-variant]
-  depends_on = [module.kubernetes-engine_private-cluster-update-variant]
+  depends_on = [module.kubernetes-engine_beta-private-cluster-update-variant]
+  #depends_on = [module.kubernetes-engine_private-cluster-update-variant]
 }
 
-#module "kubernetes-engine_beta-private-cluster-update-variant" {
-module "kubernetes-engine_private-cluster-update-variant" {
-  #source  = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
-  #version = "26.1.1"
-  source  = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster-update-variant"
-  version = "29.0.0"
+module "kubernetes-engine_beta-private-cluster-update-variant" {
+#module "kubernetes-engine_private-cluster-update-variant" {
+  source  = "terraform-google-modules/kubernetes-engine/google//modules/beta-private-cluster-update-variant"
+  version = "26.1.1"
+  #source  = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster-update-variant"
+  #version = "29.0.0"
   # insert the 6 required variables here
 
   project_id = var.project_id
@@ -66,15 +66,15 @@ module "kubernetes-engine_private-cluster-update-variant" {
 
 module "gke_auth" {
   source               = "terraform-google-modules/kubernetes-engine/google//modules/auth"
-  #version              = "25.0.0"
-  version              = "29.0.0"
+  version              = "25.0.0"
+  #version              = "29.0.0"
   # insert the 3 required variables here
 
   project_id           = var.project_id
-  cluster_name         = module.kubernetes-engine_private-cluster-update-variant.name
-  location             = module.kubernetes-engine_private-cluster-update-variant.location
-  #cluster_name         = module.kubernetes-engine_beta-private-cluster-update-variant.name
-  #location             = module.kubernetes-engine_beta-private-cluster-update-variant.location
-  #use_private_endpoint = false # default is "false"
+  #cluster_name         = module.kubernetes-engine_private-cluster-update-variant.name
+  #location             = module.kubernetes-engine_private-cluster-update-variant.location
+  cluster_name         = module.kubernetes-engine_beta-private-cluster-update-variant.name
+  location             = module.kubernetes-engine_beta-private-cluster-update-variant.location
+  use_private_endpoint = false # default is "false"
 }
 
